@@ -7,6 +7,7 @@
 #define _DEFAULT_SOURCE
 
 #include <stdio.h>
+#include <math.h>
 #include "display.h"
 #include "wildfire.h"
 
@@ -30,12 +31,27 @@ static void printForest(char forest[size][size]) {
 }
 
 static void initialize(char forest[size][size]) {
+	char symbols[size*size+1];
+	int trees = (int)roundf(size*size*density);
+	int burning = (int)roundf(trees*burningProp);
+	trees = trees - burning;
+
+	int sym = 0;
+	for (; sym<trees; sym++) {
+		symbols[sym] = TREE;
+	}
+	for (; sym < trees+burning; sym++) {
+		symbols[sym] = BURNING;
+	}
+	for (; sym < size*size; sym++) {
+		symbols[sym] = EMPTY;
+	}
+
 	for (int i=0; i<size; i++) {
 		for (int j=0; j<size; j++) {
-			forest[i][j] = TREE;
+			forest[i][j] = symbols[i*size + j];
 		}
 	}
-	printForest(forest);
 }
 
 int main() {
@@ -48,5 +64,6 @@ int main() {
 	char forest[size][size];
 
 	initialize(forest);
+	printForest(forest);
 
 }
