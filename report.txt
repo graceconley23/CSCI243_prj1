@@ -1,6 +1,6 @@
 ============================= ASSIGNMENT REPORT ============================
 Assignment name is: Wildfire
-My name is:         <<<ENTER YOUR FULL NAME>>>
+My name is: Grace Conley
 
 	[USE PLAIN TEXT]
 	[INSERT ANSWERS AFTER EACH QUESTION AND ADD MORE LINES AS NEEDED.]
