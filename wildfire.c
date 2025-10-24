@@ -6,6 +6,7 @@
 
 #define _DEFAULT_SOURCE
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include "display.h"
@@ -21,6 +22,11 @@ static int steps;		// no default - pN
 static int printMode;		// default 0 - pN
 
 
+static int randInt(int min, int max) {
+	int range = max - min + 1;
+	return (min + random() % range);
+}
+
 static void printForest(char forest[size][size]) {
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
@@ -31,11 +37,14 @@ static void printForest(char forest[size][size]) {
 }
 
 static void initialize(char forest[size][size]) {
-	char symbols[size*size+1];
-	int trees = (int)roundf(size*size*density);
+	// Calculate the correct number of each symbol
+	int spaces = size*size;
+	char symbols[spaces+1];
+	int trees = (int)roundf(spaces*density);
 	int burning = (int)roundf(trees*burningProp);
 	trees = trees - burning;
 
+	// Fill an array with the appropriate number of each symbol
 	int sym = 0;
 	for (; sym<trees; sym++) {
 		symbols[sym] = TREE;
@@ -43,10 +52,19 @@ static void initialize(char forest[size][size]) {
 	for (; sym < trees+burning; sym++) {
 		symbols[sym] = BURNING;
 	}
-	for (; sym < size*size; sym++) {
+	for (; sym < spaces; sym++) {
 		symbols[sym] = EMPTY;
 	}
 
+	// Shuffle the symbols
+	for (int k=spaces - 1; k>0; k--) {
+        	int rand = random() % (k + 1);
+        	char temp = symbols[k];
+        	symbols[k] = symbols[rand];
+        	symbols[rand] = temp;
+    	}
+
+	// Fill the forest with the symbols
 	for (int i=0; i<size; i++) {
 		for (int j=0; j<size; j++) {
 			forest[i][j] = symbols[i*size + j];
@@ -55,6 +73,8 @@ static void initialize(char forest[size][size]) {
 }
 
 int main() {
+	srandom(41);
+
 	// Assume no flags for now
 	burningProp = 0.1;
 	catchingProb = 0.3;
