@@ -26,9 +26,9 @@ static int directions[8][2] = {	{-1, -1}, {-1, 0}, {-1, 1},
 				{ 1, -1}, { 1, 0}, { 1, 1}	};
 
 
-static int randInt(int min, int max) {
-	int range = max - min + 1;
-	return (min + random() % range);
+static int randProb() {
+	float rand = (float)random() / (float)RAND_MAX;
+	return rand;
 }
 
 static void printForest(char forest[size][size]) {
@@ -62,10 +62,10 @@ static void initialize(char forest[size][size]) {
 
 	// Shuffle the symbols
 	for (int k=spaces - 1; k>0; k--) {
-        	int rand = random() % (k + 1);
-        	char temp = symbols[k];
-        	symbols[k] = symbols[rand];
-        	symbols[rand] = temp;
+		int rand = random() % (k + 1);
+		char temp = symbols[k];
+		symbols[k] = symbols[rand];
+		symbols[rand] = temp;
     	}
 
 	// Fill the forest with the symbols
@@ -76,32 +76,34 @@ static void initialize(char forest[size][size]) {
 	}
 }
 
-static int burn(char forest[size][size], int i, int j) {
+static int catchFire(char forest[size][size], int i, int j) {
 	int neighbors = 0;
-	int burning = 0;
+	int burningNeighbors = 0;
 
+	// Get total number of neighbors and number of burning neighbors
 	for (int v=0; v<8; v++) {
-		// Get total neighbors and burning neighbors
 		int neighbori = i + directions[v][0];
 		int neighborj = j + directions[v][1];
 		if (neighbori > 0 && neighbori < size && neighborj > 0 && neighborj < size) {
 			neighbors++;
 			if (forest[neighbori][neighborj] == BURNING) {
-				burning++;
+				burningNeighbors++;
 			}
 		}
 	}
-	return burning;
 
-}
+	// If not enough neighbors are burning,don't catch fire
+	float portionBurning = (float)burningNeighbors / (float)neighbors;
+	if (portionBurning < neighborEffect) {
+		return 0;
+	}
 
-static void printBurn(char forest[size][size]) {
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            printf("%d ", burn(forest,i,j));
-        }
-        printf("\n");
-    }
+	// Catch on fire based on randomization
+	if (randProb() > catchingProb) {
+		return 0;
+	}
+	return 1;
+
 }
 
 int main() {
@@ -117,5 +119,4 @@ int main() {
 
 	initialize(forest);
 	printForest(forest);
-	printBurn(forest);
 }
