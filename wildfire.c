@@ -21,6 +21,10 @@ static int size; 		// 5    to 40  - default 10  - sN
 static int steps;		// no default - pN
 static int printMode;		// default 0 - pN
 
+static int directions[8][2] = {	{-1, -1}, {-1, 0}, {-1, 1},
+				{ 0, -1},          { 0, 1},
+				{ 1, -1}, { 1, 0}, { 1, 1}	};
+
 
 static int randInt(int min, int max) {
 	int range = max - min + 1;
@@ -28,12 +32,12 @@ static int randInt(int min, int max) {
 }
 
 static void printForest(char forest[size][size]) {
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            printf("%c ", forest[i][j]);
-        }
-        printf("\n");
-    }
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size; j++) {
+			printf("%c ", forest[i][j]);
+		}
+		printf("\n");
+	}
 }
 
 static void initialize(char forest[size][size]) {
@@ -72,6 +76,34 @@ static void initialize(char forest[size][size]) {
 	}
 }
 
+static int burn(char forest[size][size], int i, int j) {
+	int neighbors = 0;
+	int burning = 0;
+
+	for (int v=0; v<8; v++) {
+		// Get total neighbors and burning neighbors
+		int neighbori = i + directions[v][0];
+		int neighborj = j + directions[v][1];
+		if (neighbori > 0 && neighbori < size && neighborj > 0 && neighborj < size) {
+			neighbors++;
+			if (forest[neighbori][neighborj] == BURNING) {
+				burning++;
+			}
+		}
+	}
+	return burning;
+
+}
+
+static void printBurn(char forest[size][size]) {
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            printf("%d ", burn(forest,i,j));
+        }
+        printf("\n");
+    }
+}
+
 int main() {
 	srandom(41);
 
@@ -85,5 +117,5 @@ int main() {
 
 	initialize(forest);
 	printForest(forest);
-
+	printBurn(forest);
 }
